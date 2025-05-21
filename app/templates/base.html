@@ -11,5 +11,10 @@
   <body>
     {% include "header.html" %} {% block content %} {% endblock %} 
     {% include "footer.html" %}
+    <script>
+function goToProduct(slug) {
+    window.location.href = "/product/" + slug + "/";
+}
+  </script>
   </body>
 </html>

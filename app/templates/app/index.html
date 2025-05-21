@@ -5,22 +5,46 @@
 {% block content %}
 <div class="container">
     <div class="products">
-    {% for product in products %}
-        <div class="product-card">
-            <div class="product-img">
-                <img src="{{ product.image.url }}" alt="{{ product.name }}">
-            </div>
-            <p class="product-price">{{ product.price }} ₽</p>
-            <div class="product-info">
-                <p class="product-brand">{{ product.brand.name }}</p>
-                /
-                <p class="product-name">{{ product.name }}</p>
-            </div>
-            <p class="product-category">{{ product.category.name }}</p>
-            <button class="product-button" onclick="window.location.href='{% url 'product_details' product.id %}'">Купить</button>
+
+
+        {% for product in page_obj %}
+    <div class="product-card" onclick="goToProduct('{{ product.slug }}')" style="cursor: pointer;">
+        <div class="product-img">
+            <img src="{{ product.image.url }}" alt="{{ product.name }}">
         </div>
-    
+        <p class="product-price">{{ product.price }} ₽</p>
+        <div class="product-info">
+            <p class="product-brand">{{ product.brand.name }}</p> /
+            <p class="product-name">{{ product.name }}</p>
+        </div>
+        <p class="product-category">{{ product.category.name }}</p>
+
+        <form method="post" action="{% url 'add_to_cart' product.slug %}" class="add-to-cart-form" onclick="event.stopPropagation();">
+            {% csrf_token %}
+            <button type="submit" class="product-button">в корзину</button>
+        </form>
+    </div>
     {% endfor %}
+</div>
+ <!-- Пагинация — теперь ВНИЗУ -->
+    <div class="pagination">
+    {% if page_obj.has_previous %}
+        <a href="?page=1">&laquo;</a>
+        <a href="?page={{ page_obj.previous_page_number }}">←</a>
+    {% endif %}
+
+    {% for num in page_range %}
+        {% if page_obj.number == num %}
+            <span class="current">{{ num }}</span>
+        {% else %}
+            <a href="?page={{ num }}">{{ num }}</a>
+        {% endif %}
+    {% endfor %}
+
+    {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}">→</a>
+        <a href="?page={{ page_obj.paginator.num_pages }}">&raquo;</a>
+    {% endif %}
     </div>
 </div>
 {% endblock %}

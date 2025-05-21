@@ -1,4 +1,16 @@
 from django.db import models
+from django.contrib.auth.models import User
+
+class Cart(models.Model):
+    session_key = models.CharField(max_length=40, null=True, blank=True, unique=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+
+class CartItem(models.Model):
+    cart = models.ForeignKey(Cart, related_name='items', on_delete=models.CASCADE)
+    product = models.ForeignKey('Product', on_delete=models.CASCADE)
+    quantity = models.PositiveIntegerField(default=1)
 
 class Product(models.Model):
     name = models.CharField(
@@ -30,12 +42,25 @@ class Product(models.Model):
         verbose_name="Бренд",
         on_delete=models.CASCADE,
     )
+    slug = models.SlugField(
+        "URL",
+        max_length=250,
+        unique=True, 
+        null=True,
+        editable=True,
+    )
+
 
     class Meta:
         verbose_name="Товар"
         verbose_name_plural="Товары"
     def __str__(self):
         return self.name
+    
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.name)
+        super().save(*args, **kwargs)
 
 
 
@@ -51,11 +76,23 @@ class Category(models.Model):
         null=True,
         blank=True,
     )
+    slug = models.SlugField(
+        "URL", 
+        max_length=250,
+        unique=True, 
+        null=True,
+        editable=True,
+    )
+    
     class Meta:
         verbose_name="Категория"
         verbose_name_plural="Категории"
     def __str__(self):
         return self.name
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.name)
+        super().save(*args, **kwargs)
 
 
 class Brand(models.Model):
