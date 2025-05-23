@@ -291,3 +291,16 @@ nav .nav-links .nav-link a {
   font-size: 18px;
   font-weight: bold;
 }
+.cart-info a {
+  display: inline-block;
+  padding: 4px 8px;
+  margin: 0 4px;
+  background-color: #ddd;
+  border-radius: 4px;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.cart-info a:hover {
+  background-color: #ccc;
+}

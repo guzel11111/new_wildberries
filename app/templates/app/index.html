@@ -1,5 +1,6 @@
-{% extends "base.html" %}
 
+{% extends "base.html" %}
+{% load cart_extras %}
 {% block title %}Главная{% endblock %}
 
 {% block content %}
@@ -20,8 +21,15 @@
         <p class="product-category">{{ product.category.name }}</p>
 
         <form method="post" action="{% url 'add_to_cart' product.slug %}" class="add-to-cart-form" onclick="event.stopPropagation();">
-            {% csrf_token %}
-            <button type="submit" class="product-button">в корзину</button>
+    {% csrf_token %}
+            <input type="hidden" name="next" value="{{ request.get_full_path }}">
+            <button type="submit" class="product-button">
+                {% if product.slug in cart %}
+                    добавлено ({{ cart|dict_get:product.slug }})
+                {% else %}
+                    в корзину
+                {% endif %}
+            </button>
         </form>
     </div>
     {% endfor %}

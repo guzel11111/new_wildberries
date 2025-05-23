@@ -14,7 +14,12 @@
                     <div class="cart-info">
                         <h3>{{ item.product.name }}</h3>
                         <p>Цена: {{ item.product.price }} ₽</p>
-                        <p>Количество: {{ item.quantity }}</p>
+                        <p>
+                            Количество:
+                            <a href="{% url 'decrease_quantity' item.product.slug %}">−</a>
+                            {{ item.quantity }}
+                            <a href="{% url 'increase_quantity' item.product.slug %}">+</a>
+                        </p>
                         <p>Итого: {{ item.item_total }} ₽</p>
                         <form method="post" action="{% url 'remove_from_cart' item.product.slug %}">
                             {% csrf_token %}
@@ -26,6 +31,9 @@
         </div>
         <div class="cart-total">
             <h3>Общая сумма: {{ total }} ₽</h3>
+        </div>
+        <div style="margin-top: 20px;">
+            <a href="{% url 'clear_cart' %}" class="remove-button">Очистить корзину</a>
         </div>
     {% else %}
         <p>Ваша корзина пуста.</p>

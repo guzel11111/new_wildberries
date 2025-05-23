@@ -26,6 +26,7 @@ def index(request):
     context = {
         "page_obj": page_obj,
         "page_range": page_range,
+        "cart": request.session.get("cart", {}),
     }
     return render(request, "app/index.html", context)
 
@@ -46,7 +47,10 @@ def add_to_cart(request, product_slug):
         cart = request.session.get('cart', {})
         cart[str(product_slug)] = cart.get(str(product_slug), 0) + 1
         request.session['cart'] = cart
-    return redirect('index')
+
+        next_url = request.POST.get('next', 'cart')
+        return redirect(next_url)
+    return redirect('cart')
 
 
 def cart_view(request):
@@ -78,4 +82,24 @@ def remove_from_cart(request, product_slug):
     if str(product_slug) in cart:
         del cart[str(product_slug)]
         request.session['cart'] = cart
+    return redirect('cart')
+def increase_quantity(request, product_slug):
+    cart = request.session.get('cart', {})
+    cart[product_slug] = cart.get(product_slug, 0) + 1
+    request.session['cart'] = cart
+    return redirect('cart')
+
+
+def decrease_quantity(request, product_slug):
+    cart = request.session.get('cart', {})
+    if cart.get(product_slug, 0) > 1:
+        cart[product_slug] -= 1
+    else:
+        cart.pop(product_slug, None)
+    request.session['cart'] = cart
+    return redirect('cart')
+
+
+def clear_cart(request):
+    request.session['cart'] = {}
     return redirect('cart')
